@@ -13,6 +13,9 @@ $(document).ready(function () {
         if (track != null && localStorage.getItem("shows") != "[]") {
              $(".show-list").empty();
             showsTrack = JSON.parse(track);
+        } else{
+            $(".show-list").empty();
+            $(".show-list").append("<h2>You Have No Saved Shows</h2>");
         }
         loadPage();
     }
@@ -171,8 +174,8 @@ $(document).ready(function () {
         descr.text(show.description);
         descr.hide();
         descr.appendTo(cardCol2);
-        var more = $("<span>").attr("id", "more");
-        more.text("Show More");
+        var more = $("<button>").attr("type", "button").attr("id", "more");
+        more.text("Show More").addClass("btn");
         more.appendTo(cardCol2);
         $(".show-list").prepend(newRow);
 
