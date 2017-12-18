@@ -12,82 +12,184 @@
     <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
     <!-- CSS Link -->
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
-    <!-- jQuery Link     -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- Bootstrap Javascript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
-        crossorigin="anonymous"></script>
-    <!-- javascript link     -->
-    <script type="text/javascript" src="assets/javascript/logic.js"></script>
+
 </head>
 
 <body>
-    <nav class="navbar navbar-light navbar-expand-md bg-light">
-        <span class="navbar-brand">Show List</span>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-            aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
 
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
+
+    <nav class="navbar navbar-light navbar-expand-md bg-light justify-content-between">
+        <h1>Watchlist</h1>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" id="username" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+                Username
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" style="min-width: 0;">
+                <button class="dropdown-item" type="button">Profile</button>
+                <button class="dropdown-item" type="button">Sign-Out</button>
+            </div>
         </div>
     </nav>
+
+
     <div class="container">
-        <div class="row my-3">
-            <div class="col-md-12">
+        <div class="row mt-3">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#exampleModal">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="dropdown d-flex-inline">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                Filter
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <button class="dropdown-item" type="button">Favorite</button>
+                                <button class="dropdown-item" type="button">Watched</button>
+                                <button class="dropdown-item" type="button">None</button>
+                            </div>
+                        </div>
+                        <h3 class="d-flex-inline">My List</h3>
+                        <button type="button" class="btn btn-primary d-flex-inline" data-toggle="modal" data-target="#addAShow">
                             <i class="fa fa-book" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="card-body show-list text-center">
                         <h2>You Have No Saved Shows</h2>
+
                     </div>
                 </div>
             </div>
         </div>
+        <!-- End of Row  -->
+        <div class="row my-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recommended</h3>
+                    </div>
+                    <div class="card-body recomend-list">
+                        
+                        <!-- End of Recommended Card -->
+                    </div>
+                </div>
+                <!-- End of Card -->
+            </div>
+        </div>
+        <!-- End of Row -->
     </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal 1-->
+    <div class="modal fade" id="addAShow" tabindex="-1" role="dialoug" aria-labelledby="exampleModalLongTitle" aria-hidden="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add a Show...</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add a Show</h5>
+                </div>
+                <div class="tab-holder">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#lookupShow" data-toggle="tab">Look for a Show</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#createShow" data-toggle="tab">Create a Show</a>
+                        </li>
+
+                    </ul>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="title">Show Title</label>
-                            <input type="text" class="form-control" id="title" placeholder="Show Title...">
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="lookupShow">
+
+                            <form class="form">
+
+                                <div class="form-row">
+                                    <input id="searchShow" class="form-control col-9" type="search" placeholder="Search" aria-label="Search">
+                                    <button id="goSearch" class="btn btn-outline-success offset-sm-1 col-3 col-sm-2" type="button">Search</button>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="radio" name="selection" id="s0" value="TVShow" checked="checked"> TV Shows & Anime
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="radio" name="selection" id="s1" value="Movie"> Movie
+                                        </label>
+                                    </div>
+                                </div>
+                            </form>
+                            <form class="form">
+                                <div class="row">
+                                    <div class="col-12 ">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Title</th>
+                                                    <th scope="col">Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="search-results form-group">
+
+
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+
+                                <div class="float-right">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" id="apiSubmit" data-dismiss="modal" class="btn btn-primary">Add Show</button>
+                                </div>
+
+                            </form>
                         </div>
-                        <div class="form-group">
-                            <label for="episodeNum">Episode Number</label>
-                            <input type="number" class="form-control" id="episodeNum">
+                        <div class="tab-pane fade" id="createShow">
+                            <form class="form">
+                                <div class="form-group">
+                                    <label for="title">Show Title</label>
+                                    <input type="text" class="form-control" id="title" placeholder="Show Title..." >
+                                </div>
+                                <div class="form-group">
+                                    <label for="episodeNum">Season</label>
+                                    <input type="number" class="form-control" id="seasonNum" placeholder="Optional">
+                                </div>
+                                <div class="form-group">
+                                    <label for="episodeNum">Episode Number</label>
+                                    <input type="number" class="form-control" id="episodeNum" placeholder="Optional">
+                                </div>
+                                <div class="form-group">
+                                    <label for="descriptions">Show Description</label>
+                                    <textarea class="form-control" id="descriptions" rows="3" placeholder="Description of Show..." ></textarea>
+                                </div>
+                                <div class="float-right">
+                                    <button type="button" id="cancel" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <input type="submit" id="customSubmit" data-dismiss="modal" class="btn btn-primary" value="Add Show">
+                            </form>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="descriptions">Show Description</label>
-                            <textarea class="form-control" id="descriptions" rows="3"></textarea>
-                        </div>
-                    </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" id="new-show" class="btn btn-primary" data-dismiss="modal">Save Show</button>
                     </div>
                 </div>
             </div>
         </div>
+
+
+        <!-- jQuery Link     -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Bootstrap Javascript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+            crossorigin="anonymous"></script>
+        <!-- javascript link     -->
+        <script type="text/javascript" src="assets/javascript/apiJS.js"></script>
+        <script type="text/javascript" src="assets/javascript/ajxTVShow.js"></script>
+        <script type="text/javascript" src="assets/javascript/app.js"></script>
 
 </body>
 

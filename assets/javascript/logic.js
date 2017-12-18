@@ -7,12 +7,11 @@ $(document).ready(function () {
         console.log("New Show Added");
     }
     function storageToArr() {
-        var track = localStorage.getItem("shows");
-        console.log(JSON.parse(track));
+        var track = JSON.parse(localStorage.getItem("shows"));
         console.log(JSON.parse("[]"));
-        if (track != null && localStorage.getItem("shows") != "[]") {
+        if (track && track.length) {
              $(".show-list").empty();
-            showsTrack = JSON.parse(track);
+            showsTrack = track;
         } else{
             $(".show-list").empty();
             $(".show-list").append("<h2>You Have No Saved Shows</h2>");
@@ -34,6 +33,14 @@ $(document).ready(function () {
         $("#episodeNum").val("");
         $("#descriptions").val("");
     });
+    $("#filter").on("click", function(event) {
+        event.preventDefault();
+        var filterShows = showsTrack.filter(function(show) {
+            
+            return show.title.includes($("#search").val());
+        })
+        console.log(filterShows);
+    });
     function removeFromArr(item) {
         var index = showsTrack.indexOf(item);
         showsTrack.splice(index, 1);
@@ -50,11 +57,11 @@ $(document).ready(function () {
         var parent = $(this).parent();
         console.log(parent);
         if ($(this).text() === "Show More") {
-            parent.children("#description").show();
-            $(this).text("Show Less");
+            parent.children("#description").slideDown()
+            $(this).text("Show Less")
         } else {
-            parent.children("#description").hide();
-            $(this).text("Show More");
+            parent.children("#description").slideUp()
+            $(this).text("Show More")
         }
         saveToStorage();
     });
