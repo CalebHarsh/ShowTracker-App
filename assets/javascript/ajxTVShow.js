@@ -59,3 +59,8 @@ $("#goSearch").on("click", function (event) {
         alert("Have to Enter a Search Item")
     }
 });
+$("#searchShow").on("keypress", function(key){
+    if(key.keyCode === 13){
+         event.preventDefault()
+    }
+})

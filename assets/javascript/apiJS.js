@@ -24,7 +24,8 @@ function makeDataRow (showData, i) {
         episode: 1,
         watch_status: false,
         type: "normal",
-        favorite: false
+        favorite: false,
+        username: myUsername
     }
     var input = $("<input>").attr("type", "radio")
         .attr("id", i)
@@ -44,15 +45,16 @@ function makeDataRow (showData, i) {
 //=================================================================================================================================
 //Getting Data from the table into List
 
-$("#apiSubmit").on("click", function () {
-    for(var i = 0; i < 3; i++){
+$("#apiSubmit").on("click", function (event) {
+    for(var i = 0; i < 20; i++){
         var input = $("#"+i).is(":checked")
         if(input) {
             var data = $("#"+i).data("show-data")
             myShows.push(data)
-            displayShows()
+            displayShows(myShows)
+            myShowsToDatabase()
             $(".search-results").empty()
-            $("#searchShow").val()
+            $("#searchShow").val("")
             return
         }
     }
@@ -77,7 +79,8 @@ function makeMovieDataRow (showData) {
         episode: 1,
         watch_status: false,
         type: "movie",
-        favorite: false
+        favorite: false,
+        username: myUsername
     }
     var input = $("<input>").attr("type", "radio")
         .attr("id", 0)

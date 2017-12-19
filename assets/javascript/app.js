@@ -1,15 +1,25 @@
-var myShows = [{
-    name: "caleb",
-    season: 1,
-    episode: 21,
-    description: "descript",
-    favorite: false,
-    watch_status: false,
-    type: "normal",
-    recomended: false
-}]
-var myUsername = "Harshdog"
-//Example
+//firebase config
+
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyBzi7e9jdH8OSKXYoUl0vFBg5yzlCphrFg",
+    authDomain: "show-tracker-ffcfa.firebaseapp.com",
+    databaseURL: "https://show-tracker-ffcfa.firebaseio.com",
+    projectId: "show-tracker-ffcfa",
+    storageBucket: "show-tracker-ffcfa.appspot.com",
+    messagingSenderId: "642992898224"
+};
+
+firebase.initializeApp(config);
+
+var database = firebase.database()
+//============================================================================================================================
+//global Varibales
+
+var myShows = []
+var myUsername = "Caleb"
+
+//global Variables
 // ========================================================================================================================
 //creating group of buttons 
 
@@ -115,11 +125,16 @@ function statusBtn(status) {
 }
 
 //recomdation
-function divRecDesc(descpt) {
+function divRecDesc(descpt, recomend) {
     var descript = showDescription(descpt)
+    if (recomend) {
+        var rec = "<a class='mb-2' id='recomend'>Unrecommend</a>"
+    } else {
+        var rec = "<a class='mb-2' id='recomend'>Recommend</a>"
+    }
     return $("<div>").addClass("showmore pb-2 px-4")
         .append(descript)
-        .append("<a class='mb-2' id='recomend'>Recommend</a>")
+        .append(rec)
         .hide()
 }
 
@@ -164,7 +179,7 @@ function newShow(showObj) {
     cardDetails.append(statusBtn(showObj.watch_status))
         .appendTo(cardSeEpRow)
     var showDesc = createSpecialColum(["text-center", "text-dark"])
-        .append(divRecDesc(showObj.description))
+        .append(divRecDesc(showObj.description, showObj.recomended))
         .append(showButton())
         .appendTo(cardDescRow)
     var cardBody = $("<div>").addClass("card-body p-0 pb-3 text-white")
@@ -192,10 +207,9 @@ function newShow(showObj) {
 $(".show-list").on("click", ".remove", function () {
     var showCard = $(this).closest(".card")
     var input = showCard.data("show-data")
-    console.log(myShows.indexOf(input))
     myShows.splice(input, 1);
-    console.log(myShows)
-    displayShows()
+    displayShows(myShows)
+    myShowsToDatabase()
 });
 
 //favorite button
@@ -209,6 +223,7 @@ $(".show-list").on("click", ".fav", function () {
         showData.favorite = true
     }
     $(this).closest(".card").data("show-data", showData)
+    myShowsToDatabase()
 });
 
 //plus and minus button
@@ -222,7 +237,7 @@ $(".show-list").on("click", ".watch-info > button", function () {
         showData.episode = upAndDown(symbol, showData.episode, this, epiSea.toLowerCase())
     }
     $(this).closest(".card").data("show-data", showData)
-
+    myShowsToDatabase()
 });
 
 //Watch Status
@@ -241,7 +256,7 @@ $(".show-list").on("click", "#status", function () {
         watch.watch_status = true
     }
     $(this).closest(".card").data("show-data", watch)
-
+    myShowsToDatabase()
 });
 
 //show more button
@@ -259,8 +274,8 @@ $(".show-list").on("click", "#more", function () {
 
 //recomended button
 $(".show-list").on("click", "#recomend", function () {
-    var showData =  $(this).closest(".card").data("show-data")
-    if(showData.recomended) {
+    var showData = $(this).closest(".card").data("show-data")
+    if (showData.recomended) {
         $(this).text("Recommended")
         showData.recomended = false
         //remove from recomended list
@@ -268,9 +283,10 @@ $(".show-list").on("click", "#recomend", function () {
         showData.recomended = true
         $(this).text("Unrecommended")
         //add to recommended list
-        displayRecommended(showData, myUsername)
+        addToRecommended(showData)
     }
     $(this).closest(".card").data("show-data", showData)
+    myShowsToDatabase()
 });
 
 //Clicking card events
@@ -291,33 +307,93 @@ function upAndDown(symbol, epiSea, context, where) {
 //Click functions
 //==========================================================================================================================================
 //Display shows 
-function displayShows() {
+
+function displayShows(arr) {
     $(".show-list").empty()
-    if (myShows.length != 0) {
-        myShows.forEach(element => {
+    if (arr.length != 0) {
+        arr.forEach(element => {
             $(".show-list").prepend(newShow(element))
             console.log(element)
         })
     } else {
         $(".show-list").append("<h2>You Have No Saved Shows</h2>")
     }
-
 }
 
-displayShows()
+
+function displayShowsFav(arr) {
+    $(".show-list").empty()
+    var favShows = arr.filter(show => {
+        return show.favorite
+    })
+    console.log(favShows)
+    if (favShows.length != 0) {
+        favShows.forEach(element => {
+            $(".show-list").prepend(newShow(element))
+            console.log(element)
+        })
+    } else {
+        $(".show-list").append("<h2>You Have No Saved Favorite Shows</h2>")
+    }
+}
+
+function displayShowsWatch(arr) {
+    $(".show-list").empty()
+    var watchShows = arr.filter(show => {
+        return show.watch_status
+    })
+    console.log(watchShows)
+    if (watchShows.length != 0) {
+        watchShows.forEach(element => {
+            $(".show-list").prepend(newShow(element))
+            console.log(element)
+        })
+    } else {
+        $(".show-list").append("<h2>You Have No Saved Watched Shows</h2>")
+    }
+}
+
+function displayRecommendShow(arr) {
+   
+    var recommendedShowList = arr.filter(show => {
+        return show.username != myUsername
+    })
+    displayRecommended(recommendedShowList)
+}
 
 //Display shows
 //=============================================================================================================================================
+//filter shows click 
+
+$("#filter-list > button").on("click", function () {
+    var filter = $(this).text()
+    console.log(filter)
+    if (filter === "Favorite") {
+        displayShowsFav(myShows)
+        $("#filter").text(filter)
+    } else if (filter === "Watched") {
+        displayShowsWatch(myShows)
+        $("#filter").text(filter)
+    } else {
+        displayShows(myShows)
+        $("#filter").text("Filter")
+    }
+
+});
+
+
+//filter shows click
+//=================================================================================================================================================
 //retrieve Data
 
 function getCardsData() {
-    var myShows = []
+    var cardData = []
     var data = $(".show-list").children()
     console.log($(".show-list").children().data("show-data"))
     for (var i = 0; i < data.length; i++) {
-        myShows.push(data.eq(i).data("show-data"))
+        cardData.push(data.eq(i).data("show-data"))
     }
-    return myShows
+    return cardData
 }
 
 //Retrieve Data
@@ -347,7 +423,8 @@ $("#customSubmit").on("click", function () {
             favorite: false,
             watch_status: false,
             type: type,
-            recomended: false
+            recomended: false,
+            username: myUsername
         }
 
         $("#title").val("")
@@ -356,7 +433,8 @@ $("#customSubmit").on("click", function () {
         $("#descriptions").val("")
 
         myShows.push(customShow)
-        displayShows()
+        displayShows(myShows)
+        myShowsToDatabase()
     } else {
         alert("Must provide a title")
     }
@@ -368,7 +446,7 @@ $("#customSubmit").on("click", function () {
 //creating a recommended cards
 
 //recommend Card
-function newRecomendShow(showObj, username) {
+function newRecomendShow(showObj) {
     //card layout
     var cardTitleRow = $("<div>").addClass("row")
     var cardDescRow = $("<div>").addClass("row")
@@ -381,7 +459,7 @@ function newRecomendShow(showObj, username) {
         .append(showDescription(showObj.description))
         .appendTo(cardDescRow)
     var recomend = $("<span>").append("Recommended by ")
-        .append(username)
+        .append(showObj.username)
         .attr("id", "username")
         .appendTo(cardRecomend)
     var cardBody = $("<div>").addClass("card-body p-0 pb-3 text-white")
@@ -397,9 +475,9 @@ function newRecomendShow(showObj, username) {
 }
 
 //creates type and add button
-function addButtonAndType (type) {
+function addButtonAndType(type) {
     var typeDiv = $("<h4>").addClass("d-inline-flex m-0  mt-1 ml-3")
-    if(type === "normal") {
+    if (type === "normal") {
         typeDiv.text("Season and Episodes")
     } else if (type === "episodes") {
         typeDiv.text("Episodes")
@@ -415,18 +493,85 @@ function addButtonAndType (type) {
 }
 
 //display the recomend list
-function displayRecommended (showData, username) {
-    $(".recomend-list").prepend(newRecomendShow(showData, username))
+function displayRecommended(showArr) {
+    showArr.forEach(element => {
+        $(".recomend-list").prepend(newRecomendShow(element))
+    })
 }
+
+
 
 //Creating recommended Card
 //=============================================================================================================================================
 //recommend click events
 
-//add to list
+//add to my list
 $(".recomend-list").on("click", ".add", function () {
     var showData = $(this).closest(".card").data("show-data")
     myShows.push(showData)
-    displayShows()
+    displayShows(myShows)
+    myShowsToDatabase()
 
 });
+
+//recommend click events
+//=================================================================================================================================================
+//Sign-In Page 
+
+$("#login").on("click", function (event) {
+    event.preventDefault()
+    var username = $("#username-signIn").val()
+    var password = $("#password-signIn").val()
+    console.log("Username " + username, "Password " + password)
+
+    $("#username-signIn").val("")
+    $("#password-signIn").val("")
+    $("#signIn-page").hide()
+    $("#main-page").show()
+    $("#username").text(username)
+    databaseToMyShows()
+    getRecommendDatabase()
+})
+
+
+//Sign-In Page
+//===================================================================================================================================================
+//store Data
+
+function databaseToMyShows() {
+    database.ref("/users/" + myUsername + "/shows").once("value").then(snapshot => {
+        var shows = snapshot.val()
+        $.each(shows, function (key, result) {
+            myShows.push(result)
+        })
+        displayShows(myShows)
+
+    })
+}
+
+function myShowsToDatabase() {
+
+    database.ref("/users/" + myUsername + "/shows").set(myShows)
+
+}
+
+function getRecommendDatabase() {
+    database.ref("/recommended").once("value").then(snap => {
+        var recommmedList = snap.val()
+        console.log(recommmedList)
+        if (!recommmedList) {
+            $(".recomend-list").empty()
+                .append("<h2>No Recommended Shows</h2>")
+                return
+        }
+        var recomShows = []
+        $.each(recommmedList, function (key, result) {
+            recomShows.push(result)
+        })
+        displayRecommendShow(recomShows)
+    })
+}
+
+function addToRecommended (showData) {
+    database.ref("/recommended").push(showData)
+}
