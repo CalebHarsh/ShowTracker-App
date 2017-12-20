@@ -17,7 +17,7 @@ var database = firebase.database()
 //global Varibales
 
 var myShows = []
-var myUsername = "Caleb"
+var myUsername = ""
 
 //global Variables
 // ========================================================================================================================
@@ -128,9 +128,9 @@ function statusBtn(status) {
 function divRecDesc(descpt, recomend) {
     var descript = showDescription(descpt)
     if (recomend) {
-        var rec = "<a class='mb-2' id='recomend'>Unrecommend</a>"
+        var rec = "<a href='#' class='mb-2' id='recomend'>Unrecommend</a>"
     } else {
-        var rec = "<a class='mb-2' id='recomend'>Recommend</a>"
+        var rec = "<a  href='#' class='mb-2' id='recomend'>Recommend</a>"
     }
     return $("<div>").addClass("showmore pb-2 px-4")
         .append(descript)
@@ -205,11 +205,14 @@ function newShow(showObj) {
 
 //remove button
 $(".show-list").on("click", ".remove", function () {
+    // console.log(myShows)
     var showCard = $(this).closest(".card")
-    var input = showCard.data("show-data")
-    myShows.splice(input, 1);
+    var value = showCard.data("show-data")
+    var index = myShows.indexOf(value)
+    myShows.splice(index, 1);
     displayShows(myShows)
     myShowsToDatabase()
+    removeRecommeded(value)
 });
 
 //favorite button
@@ -276,9 +279,10 @@ $(".show-list").on("click", "#more", function () {
 $(".show-list").on("click", "#recomend", function () {
     var showData = $(this).closest(".card").data("show-data")
     if (showData.recomended) {
-        $(this).text("Recommended")
         showData.recomended = false
+        $(this).text("Recommended")
         //remove from recomended list
+        removeRecommeded(showData)
     } else {
         showData.recomended = true
         $(this).text("Unrecommended")
@@ -353,13 +357,6 @@ function displayShowsWatch(arr) {
     }
 }
 
-function displayRecommendShow(arr) {
-   
-    var recommendedShowList = arr.filter(show => {
-        return show.username != myUsername
-    })
-    displayRecommended(recommendedShowList)
-}
 
 //Display shows
 //=============================================================================================================================================
@@ -494,9 +491,34 @@ function addButtonAndType(type) {
 
 //display the recomend list
 function displayRecommended(showArr) {
-    showArr.forEach(element => {
-        $(".recomend-list").prepend(newRecomendShow(element))
+    console.log(showArr)
+    if (showArr.length != 0) {
+        $(".recomend-list").empty()
+        showArr.forEach(element => {
+            $(".recomend-list").prepend(newRecomendShow(element))
+        })
+    } else {
+        $(".recomend-list").empty()
+            .append("<h2 class='text-center'>No Recommended Shows</h2>")
+    }
+
+}
+
+function displayRecommendShow(arr) {
+    var filterShow = []
+    var testArr =[]
+    myShows.forEach(element => {
+        testArr.push(element.name)
     })
+    arr.forEach(element => {
+        var test = testArr.indexOf(element.name)
+        console.log(test)
+        if(test === -1 ) {
+            filterShow.push(element)
+        }
+    })
+
+    displayRecommended(filterShow)
 }
 
 
@@ -508,10 +530,11 @@ function displayRecommended(showArr) {
 //add to my list
 $(".recomend-list").on("click", ".add", function () {
     var showData = $(this).closest(".card").data("show-data")
+    showData.username = myUsername
     myShows.push(showData)
     displayShows(myShows)
     myShowsToDatabase()
-
+    getRecommendDatabase()
 });
 
 //recommend click events
@@ -524,14 +547,77 @@ $("#login").on("click", function (event) {
     var password = $("#password-signIn").val()
     console.log("Username " + username, "Password " + password)
 
+    checkUsernameAndPassword(username, password, "log")
+
+})
+
+$("#register").on("click", function (event) {
+    event.preventDefault()
+    var username = $("#username-register").val()
+    var password = $("#password-register").val()
+    console.log("Username " + username, "Password " + password)
+
+    checkUsernameAndPassword(username, password, "reg")
+
+})
+
+function checkUsernameAndPassword(testUsername, testPassword, place) {
+    database.ref("/users").once("value").then(snap => {
+        console.log(snap.val())
+        var location = "#error-message-" + place
+        if (place === "log") {
+            console.log(place)
+            if (!snap.child(testUsername).exists() || !snap.val()) {
+                console.log("error username")
+
+                $(location).empty()
+                    .text("Username doesn't exists")
+            } else {
+                console.log(place)
+                console.log(snap.child(testUsername))
+                console.log(snap.child(testUsername).child("Password").val())
+                if (snap.child(testUsername).child("Password").val() === testPassword) {
+                    // login Function 
+                    login(testUsername)
+                } else {
+                    $(location).empty()
+                        .text("Password doesn't match")
+                }
+            }
+        } else {
+            console.log(place)
+            console.log(snap.child(testUsername).exists())
+            if (snap.child(testUsername).exists()) {
+                $(location).empty()
+                    .text("Username already exists")
+            } else {
+                if (testPassword.length < 6) {
+                    $(location).empty()
+                        .text("Password must be at least 6 characters long")
+                } else {
+                    database.ref("/users/" + testUsername).set({
+                        "Password": testPassword
+                    });
+                    login(testUsername);
+                }
+            }
+        }
+    })
+
+}
+
+function login(currentUser) {
+    myUsername = currentUser
+    $("#username-register").val("")
+    $("#password-register").val("")
     $("#username-signIn").val("")
     $("#password-signIn").val("")
     $("#signIn-page").hide()
     $("#main-page").show()
-    $("#username").text(username)
+    $("#username").text(currentUser)
     databaseToMyShows()
     getRecommendDatabase()
-})
+}
 
 
 //Sign-In Page
@@ -561,8 +647,8 @@ function getRecommendDatabase() {
         console.log(recommmedList)
         if (!recommmedList) {
             $(".recomend-list").empty()
-                .append("<h2>No Recommended Shows</h2>")
-                return
+                .append("<h2 class='text-center'>No Recommended Shows</h2>")
+            return
         }
         var recomShows = []
         $.each(recommmedList, function (key, result) {
@@ -572,6 +658,36 @@ function getRecommendDatabase() {
     })
 }
 
-function addToRecommended (showData) {
+function addToRecommended(showData) {
     database.ref("/recommended").push(showData)
 }
+
+function removeRecommeded (showData) {
+    database.ref("/recommended").once("value").then(snap => {
+        var recommendList = snap.val()
+        var testObj = {
+            name: showData.name,
+            username: showData.username
+        }
+        console.log(recommendList)
+        $.each(recommendList, function (key, value) {
+            console.log(value.name, showData.name)
+            if(value.name === showData.name && value.username === showData.username) {
+                console.log(snap.child(key))
+                database.ref("/recommended/" + key).remove()
+                return
+            }
+        })
+    })
+}
+
+//store Data
+//=====================================================================================================================================================
+//logout 
+
+$("#signOut").on("click", function () {
+    myUsername = ""
+    myShows = []
+    $("#signIn-page").show()
+    $("#main-page").hide()
+})
