@@ -1,7 +1,7 @@
 //TV Show AJAX
 function getTVShowAJAXData(search) {
 
-    var queryAPI = "http://api.tvmaze.com/search/shows?q=" + search
+    var queryAPI = "https://api.tvmaze.com/search/shows?q=" + search
 
     $.ajax({
         url: queryAPI,
@@ -14,7 +14,7 @@ function getTVShowAJAXData(search) {
 }
 //Movie AJAX
 function getMovieAJAXData(search) {
-    var queryAPI = "http://www.omdbapi.com/?apikey=trilogy&t=" + search
+    var queryAPI = "https://www.omdbapi.com/?apikey=trilogy&t=" + search
 
     $.ajax({
         url: queryAPI,

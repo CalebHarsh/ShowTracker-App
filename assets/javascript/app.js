@@ -208,8 +208,11 @@ $(".show-list").on("click", ".remove", function () {
     // console.log(myShows)
     var showCard = $(this).closest(".card")
     var value = showCard.data("show-data")
+    console.log(myShows)
     var index = myShows.indexOf(value)
+    console.log(index)
     myShows.splice(index, 1);
+    console.log(myShows)
     displayShows(myShows)
     myShowsToDatabase()
     removeRecommeded(value)
