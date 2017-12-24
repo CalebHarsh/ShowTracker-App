@@ -230,6 +230,7 @@ $(".show-list").on("click", ".fav", function () {
     }
     $(this).closest(".card").data("show-data", showData)
     myShowsToDatabase()
+    displayShows(myShows)
 });
 
 //plus and minus button
@@ -263,6 +264,7 @@ $(".show-list").on("click", "#status", function () {
     }
     $(this).closest(".card").data("show-data", watch)
     myShowsToDatabase()
+    displayShows(myShows)
 });
 
 //show more button
@@ -314,9 +316,19 @@ function upAndDown(symbol, epiSea, context, where) {
 //Click functions
 //==========================================================================================================================================
 //Display shows 
-
-function displayShows(arr) {
+function displayShows (arr) {
     $(".show-list").empty()
+    if($("#filter").text() === "Favorite") {
+        displayShowsFav(arr)
+    } else if ($("#filter").text() === "Watched") {
+        displayShowsWatch(arr)
+    } else {
+        displayShowsNone(arr)
+    }
+}
+
+function displayShowsNone(arr) {
+    
     if (arr.length != 0) {
         arr.forEach(element => {
             $(".show-list").prepend(newShow(element))
@@ -329,7 +341,7 @@ function displayShows(arr) {
 
 
 function displayShowsFav(arr) {
-    $(".show-list").empty()
+   
     var favShows = arr.filter(show => {
         return show.favorite
     })
@@ -345,7 +357,7 @@ function displayShowsFav(arr) {
 }
 
 function displayShowsWatch(arr) {
-    $(".show-list").empty()
+   
     var watchShows = arr.filter(show => {
         return show.watch_status
     })
@@ -368,17 +380,9 @@ function displayShowsWatch(arr) {
 $("#filter-list > button").on("click", function () {
     var filter = $(this).text()
     console.log(filter)
-    if (filter === "Favorite") {
-        displayShowsFav(myShows)
-        $("#filter").text(filter)
-    } else if (filter === "Watched") {
-        displayShowsWatch(myShows)
-        $("#filter").text(filter)
-    } else {
-        displayShows(myShows)
-        $("#filter").text("Filter")
-    }
-
+    $("#filter").text(filter)
+    displayShows(myShows)
+   
 });
 
 
@@ -534,11 +538,17 @@ function displayRecommendShow(arr) {
 $(".recomend-list").on("click", ".add", function () {
     var showData = $(this).closest(".card").data("show-data")
     showData.username = myUsername
+    showData.recomended = false
     myShows.push(showData)
     displayShows(myShows)
     myShowsToDatabase()
     getRecommendDatabase()
 });
+
+//refresh recommended list 
+$("#refresh").on("click", function () {
+    getRecommendDatabase()
+})
 
 //recommend click events
 //=================================================================================================================================================
