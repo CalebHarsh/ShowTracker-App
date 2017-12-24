@@ -37,6 +37,11 @@ body {
     color: red;
 }
 
+.table-height{
+    max-height: 400px;
+    overflow: scroll;
+}
+
 p {
     font-weight: 600;
     color: black;
