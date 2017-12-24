@@ -1,3 +1,54 @@
+/* #379683
+
+#5d5c61
+
+#7395AE
+
+
+
+#B1A296 */
+
+body {
+    
+    /* background-color: rgb(40, 40, 82); */
+    background-image: url("../images/bg.jpg");
+    width: 100%;
+}
+
+.bg-secondary {
+    background-color: #557A95 !important;
+}
+
+.bg-success {
+    background-color: green !important;
+}
+
+.bg-light {
+    background-color:  #b1a296 !important;
+}
+
+.show-list, .recomend-list {
+    /* background-color: #5d5c61; */
+    background-color: rgb(41, 41, 165) !important;
+    color: white;
+}
+
+#error-message-log, #error-message-reg{
+    color: red;
+}
+
+p {
+    font-weight: 600;
+    color: black;
+}
+
+h1 {
+    font-family: 'Fascinate Inline', cursive;
+}
+
+h2 {
+    font-family: 'Arvo', serif;
+}
 .fa-star {
     color: gold;
 }
@@ -6,4 +57,7 @@
 }
 #recomend {
     color: black;
+}
+.modal {
+    min-width: 100%;
 }

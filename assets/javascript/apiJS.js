@@ -55,6 +55,7 @@ $("#apiSubmit").on("click", function (event) {
             myShowsToDatabase()
             $(".search-results").empty()
             $("#searchShow").val("")
+            $("#btn-cancel-show").trigger("click")
             return
         }
     }

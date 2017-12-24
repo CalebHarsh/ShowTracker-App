@@ -431,7 +431,7 @@ $("#customSubmit").on("click", function () {
         $("#seasonNum").val("")
         $("#episodeNum").val("")
         $("#descriptions").val("")
-
+        $("#btn-cancel-show").trigger("click")
         myShows.push(customShow)
         displayShows(myShows)
         myShowsToDatabase()
@@ -615,6 +615,7 @@ function login(currentUser) {
     $("#password-register").val("")
     $("#username-signIn").val("")
     $("#password-signIn").val("")
+    $("#btn-cancel-reg").trigger("click")
     $("#signIn-page").hide()
     $("#main-page").show()
     $("#username").text(currentUser)
