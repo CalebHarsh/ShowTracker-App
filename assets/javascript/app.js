@@ -65,7 +65,8 @@ function createDivSpan(showData, typeData, movEpiSea) {
         return $("<div>")
             .text(typeData + ": ")
             .append(spanDiv)
-            .append(grpBtn);
+            .append(grpBtn)
+            .addClass("my-1")
     } else {
         return $("<div>")
             .text("Movie")
@@ -169,10 +170,10 @@ function newShow(showObj) {
         .html(`<h2>${showObj.name}</h2>`)
         .appendTo(cardTitleRow)
     var cardDetails = createSpecialColum(["d-inline-flex", "justify-content-around",
-        "flex-wrap-reverse", "align-items-center", "h5"])
+        "flex-wrap-reverse", "align-items-center", "h5", "px-4"])
     if (showObj.type === "normal") {
-        cardDetails.append(createDivSpan(showObj.season, "Season", showObj.type))
-            .append(createDivSpan(showObj.episode, "Episode", showObj.type))
+        cardDetails.append(createDivSpan(showObj.episode, "Episode", showObj.type))
+            .append(createDivSpan(showObj.season, "Season", showObj.type))
     } else {
         cardDetails.append(createDivSpan(showObj.episode, "Episode", showObj.type))
     }
